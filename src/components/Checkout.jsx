@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import Swal from 'sweetalert2';
 
 const Checkout = () => {
   const { cart, getTotalPrice, clear } = useCart();
@@ -11,7 +12,6 @@ const Checkout = () => {
     address: ''
   });
   const [errors, setErrors] = useState({});
-  const [orderId, setOrderId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
@@ -68,21 +68,64 @@ const Checkout = () => {
       setIsSubmitting(true);
       
       try {
+        // Mostrar loading con SweetAlert
+        Swal.fire({
+          title: 'Procesando orden...',
+          text: 'Por favor espera mientras procesamos tu compra',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         const newOrderId = `ORD-${Date.now()}`;
-        setOrderId(newOrderId);
         
-        clear();
+        // Mostrar éxito con SweetAlert
+        const result = await Swal.fire({
+          icon: 'success',
+          title: '¡Compra exitosa!',
+          text: 'Tu orden ha sido procesada correctamente',
+          html: `
+            <div style="text-align: center;">
+              <p style="margin-bottom: 15px; color: #155724;">Tu orden ha sido procesada correctamente</p>
+              <div style="background-color: #f8f9fa; border: 2px solid #007bff; border-radius: 6px; padding: 15px; margin-bottom: 15px;">
+                <p style="color: #007bff; font-weight: bold; margin: 0 0 10px 0;">Número de orden:</p>
+                <p style="color: #007bff; font-weight: bold; font-size: 20px; margin: 0; font-family: monospace; background-color: white; padding: 10px; border-radius: 4px; border: 1px solid #dee2e6; cursor: pointer;" onclick="navigator.clipboard.writeText('${newOrderId}'); this.style.backgroundColor='#e8f5e8'; this.textContent='¡Copiado!'">
+                  ${newOrderId}
+                </p>
+              </div>
+              <p style="color: #666; font-size: 14px;">Recibirás un email con los detalles de tu compra</p>
+            </div>
+          `,
+          confirmButtonText: 'Volver al Inicio',
+          confirmButtonColor: '#007bff',
+          allowOutsideClick: false
+        });
+        
+        if (result.isConfirmed) {
+          clear();
+          window.location.href = '/';
+        }
+        
       } catch (error) {
         console.error('Error al procesar la orden:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al procesar tu orden. Por favor intenta nuevamente.',
+          confirmButtonColor: '#dc3545'
+        });
       } finally {
         setIsSubmitting(false);
       }
     }
   };
 
-  if (cart.length === 0 && !orderId) {
+  if (cart.length === 0) {
     return (
       <div style={{
         display: 'flex',
@@ -100,89 +143,7 @@ const Checkout = () => {
     );
   }
 
-  if (orderId) {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '400px',
-        padding: '20px',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          backgroundColor: '#d4edda',
-          border: '1px solid #c3e6cb',
-          borderRadius: '8px',
-          padding: '30px',
-          marginBottom: '20px',
-          maxWidth: '500px',
-          width: '100%'
-        }}>
-          <h2 style={{ color: '#155724', marginBottom: '15px' }}>¡Compra exitosa!</h2>
-          <p style={{ color: '#155724', marginBottom: '20px' }}>
-            Tu orden ha sido procesada correctamente
-          </p>
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            border: '2px solid #007bff',
-            borderRadius: '6px',
-            padding: '15px',
-            marginBottom: '15px'
-          }}>
-            <p style={{ color: '#007bff', fontWeight: 'bold', margin: '0 0 10px 0' }}>
-              Número de orden:
-            </p>
-            <p style={{ 
-              color: '#007bff', 
-              fontWeight: 'bold', 
-              fontSize: '20px',
-              margin: '0',
-              fontFamily: 'monospace',
-              backgroundColor: 'white',
-              padding: '10px',
-              borderRadius: '4px',
-              border: '1px solid #dee2e6',
-              cursor: 'pointer',
-              userSelect: 'text'
-            }}
-            onClick={() => {
-              navigator.clipboard.writeText(orderId);
-              alert('Número de orden copiado al portapapeles!');
-            }}
-            title="Haz clic para copiar"
-            >
-              {orderId}
-            </p>
-          </div>
-          <p style={{ color: '#666', fontSize: '14px' }}>
-            Recibirás un email con los detalles de tu compra
-          </p>
-        </div>
-        
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: '20px'
-        }}>
-          <Link
-            to="/"
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '4px',
-              fontSize: '16px'
-            }}
-          >
-            Volver al Inicio
-          </Link>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
