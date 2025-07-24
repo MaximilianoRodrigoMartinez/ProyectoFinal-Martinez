@@ -1,4 +1,4 @@
-# 🛒 NavegaLasRutas - Martínez
+# 🛒 Tienda Online 
 
 Este proyecto fue realizado como parte del curso de React de la Carrera Fullstack. Consiste en una tienda online que implementa navegación entre distintas vistas utilizando **React Router DOM** y utiliza **Firebase/Firestore** como base de datos.
 
