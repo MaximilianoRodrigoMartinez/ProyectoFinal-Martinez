@@ -1,4 +1,4 @@
-# 🛒 NavegaLasRutas - Martínez
+# 🛒 Tienda Online 
 
 Este proyecto fue realizado como parte del curso de React de la Carrera Fullstack. Consiste en una tienda online que implementa navegación entre distintas vistas utilizando **React Router DOM** y utiliza **Firebase/Firestore** como base de datos.
 
@@ -26,6 +26,7 @@ Implementar un sistema de rutas para navegar entre:
 ✅ **CartWidget** con indicador de cantidad  
 ✅ **Checkout** con validación de formulario  
 ✅ Ocultar contador después de agregar al carrito  
+✅ **SweetAlert2** para mejor UX en confirmaciones  
 
 ## 🧩 Componentes principales
 
@@ -86,6 +87,7 @@ src/
 - React
 - React Router DOM
 - Firebase/Firestore
+- SweetAlert2
 - JavaScript
 - HTML/CSS
 
@@ -148,6 +150,7 @@ npm run dev
 - **Dropdown del carrito**: Vista previa con hover
 - **Número de orden copiable**: Click para copiar al portapapeles
 - **Validaciones en tiempo real**: Feedback inmediato en el formulario
+- **SweetAlert2**: Alertas modernas para confirmaciones y errores
 
 ## 🔧 Scripts disponibles
 
